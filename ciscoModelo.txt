@@ -9,7 +9,7 @@ platform qfp utilization monitor load 80
 platform punt-keepalive disable-kernel-core
 platform hardware throughput crypto 50000
 !
-hostname CPE-SICOOB-{IDENTIFICACAO}-{VRF}-PA{NUM_PA}
+hostname CPE-SICOOB-{IDENTIFICAÇÃO}-{VRF}-PA{NUM_PA}
 !
 boot-start-marker
 boot system bootflash:c1100-universalk9.17.09.05a.SPA.bin
@@ -99,12 +99,12 @@ lldp run
 !
 interface GigabitEthernet0/0/0
  description WAN
- ip address {IP_UNIDADE} 255.255.255.252
+ ip address {IP_UNIDADE+1} 255.255.255.252
  negotiation auto
 !
 interface GigabitEthernet0/0/1
  description LAN
- ip address {IP_VALIDO} {MASCARA_EXTENSO}
+ ip address {IP_VALIDO+1} 255.255.255.254
  media-type rj45
  negotiation auto
 !
@@ -127,7 +127,7 @@ ip http authentication local
 no ip http secure-server
 ip http client source-interface GigabitEthernet0/0/0
 ip forward-protocol nd
-ip route 0.0.0.0 0.0.0.0 {IP_UNIDADE_M1}
+ip route 0.0.0.0 0.0.0.0 {IP_UNIDADE}
 ip ssh time-out 60
 ip ssh version 2
 !
@@ -168,18 +168,21 @@ privilege exec level 1 clear ip
 privilege exec level 1 clear arp-cache
 privilege exec level 1 clear counters
 privilege exec level 1 clear
-!
-banner login ^C
+banner login ^CCC
 
-========================================================
+
 
 UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED.
 
+
+
 This device is managed by MICROSET.
+
+
 
 All activities may be logged and monitored.
 
-========================================================
+
 
 ^C
 !
@@ -212,5 +215,6 @@ file privilege 1
 no ip scp server enable
 ip ssh time-out 60
 ip ssh authentication-retries 3
+no pnp profile pnp_cco_profile
 !
 end

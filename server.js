@@ -46,17 +46,29 @@ app.get("/", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
+<<<<<<< HEAD
   res.sendFile(path.join(__dirname, "public", "home_m7.html"));
+=======
+  res.sendFile(path.join(__dirname, "public", "home.html"));
+>>>>>>> 15dca5c809e7882546ca67f83af51844456a438c
 });  
 
 
 
 app.get("/mkt", (req, res) => {
+<<<<<<< HEAD
   res.sendFile(path.join(__dirname, "public", "mkt_m7.html")); // seu formulário MKT
 });
 
 app.get("/cisco", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "cisco_m7.html")); // seu formulário MKT
+=======
+  res.sendFile(path.join(__dirname, "public", "mkt.html")); // seu formulário MKT
+});
+
+app.get("/cisco", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "cisco.html")); // seu formulário MKT
+>>>>>>> 15dca5c809e7882546ca67f83af51844456a438c
 });
 
 app.post("/run/mkt", (req, res) => {

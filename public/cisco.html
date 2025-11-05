@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cisco – Formulário Compacto</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; background:#0e0e0f; color:#eee; margin:0; padding:24px; }
+    h1 { margin:0 0 8px; }
+    p.muted { margin:0 0 16px; color:#aaa; }
+    form { display:grid; gap:12px; max-width:520px; }
+    label { display:flex; flex-direction:column; gap:6px; }
+    input, select, button, textarea { padding:10px; border-radius:10px; border:1px solid #333; background:#121214; color:#eee; }
+    button { cursor:pointer; }
+    pre { background:#0b0b0c; border:1px solid #222; padding:12px; border-radius:10px; margin-top:18px; }
+    .card { text-align:  right; }
+    .btn { cursor:pointer; padding:8px 10px; border-radius:8px; border:1px solid #3a3a3a; background:#1a1a1d; color:#eee; text-decoration: none; display: inline-block; margin-top: 10px;}
+
+    /*balao de instruções*/
+
+    .help-fab {
+    position: fixed; right: 24px; bottom: 24px;
+    width: 44px; height: 44px; border-radius: 999px;
+    border: 1px solid #3a3a3a; background:#1a1a1d; color:#eee;
+    font-weight: 700; cursor: pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 20px rgba(0,0,0,.35); z-index: 1000;
+  }
+  .help-fab:focus { outline: 2px solid #3a3a3a; outline-offset: 2px; }
+
+  .help-bubble {
+    position: fixed; right: 24px; bottom: 84px; /* acima do FAB */
+    max-width: 420px; padding: 14px 16px;
+    border-radius: 14px; background:#101014; color:#eee;
+    border:1px solid #2a2a2a; box-shadow: 0 14px 40px rgba(0,0,0,.5);
+    z-index: 1000; display:none;
+  }
+  .help-bubble::after {
+    content: ""; position:absolute; right: 18px; bottom:-10px;
+    border-width:10px; border-style:solid;
+    border-color:#101014 transparent transparent transparent; /* seta */
+    filter: drop-shadow(0 -2px 0 #2a2a2a);
+  }
+  .help-bubble h4 { margin: 0 0 8px 0; font-size: 16px; }
+  .help-bubble p  { margin: 6px 0; color:#ccc; line-height:1.35; }
+  .help-bubble code { background:#0b0b0c; border:1px solid #222; padding:2px 6px; border-radius:6px; }
+  .help-bubble .close {
+    position:absolute; top:8px; right:10px; border:0; background:transparent; color:#aaa; cursor:pointer;
+    font-size:18px; line-height:1;
+  }
+  .help-bubble .close:hover { color:#fff; }
+
+</style>
+  
+</head>
+<body>
+  <h1>Script CCS  -  Cisco</h1>
+  <h2>Versão: 17.9</h2>
+  <div class="card">
+        <a href="/home" class="btn">Voltar</a>
+      </div>
+
+  <p class="muted">Substitua os campos com os dados referentes</p>
+  <p class="muted">Para gerar o arquivo txt com o padrão CCS</p>
+
+  <form id="form">
+    <label>IDENTIFICACAO
+      <input name="IDENTIFICACAO" placeholder="Ex: CREDIDOCE" required />
+    </label>
+
+    <label>VRF:
+        <select id="vrf" name="VRF" required>
+          <option value="" disabled selected>Selecionar…</option>
+          <option value="MPLS">MPLS</option>
+          <option value="INTERNET">INTERNET</option>
+        </select>
+      </label>
+
+    <label>Numero da PA
+      <input name="NUM_PA" placeholder="Ex: 58" required />
+    </label>
+
+    <label>SENHA do Router
+      <input name="SENHA_ROUTER" placeholder="Senha do equipamento" required />
+    </label>
+
+    <label>IP da Unidade
+      <input name="IP_UNIDADE" placeholder="ex: 192.168.10.1/30" />
+    </label>
+
+    <label>IP Valido
+    <input name="IP_VALIDO"  placeholder="ex: 191.5.132.18/31" />
+    </label>
+
+    <button type="submit">Gerar (Cisco)</button>
+  </form>
+
+  <h3>Preview</h3>
+  <pre id="out">—</pre>
+
+<script type="module">
+  import { renderResult } from "/result.js";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    // --- FORM ---
+    const form = document.getElementById("form");
+    const out  = document.getElementById("out");
+
+    if (!form) {
+      console.error("Form não encontrado (#form).");
+      return;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      try {
+        const r = await fetch("/run/cisco", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data })
+        });
+
+        const ct = r.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          const j = await r.json();
+          // Se seu result.js espera JSON:
+          if (typeof renderResult === "function") {
+            renderResult(j);
+          } else {
+            out.textContent = j.output ?? JSON.stringify(j, null, 2);
+          }
+        } else {
+          const txt = await r.text();
+          out.textContent = txt;
+        }
+      } catch (err) {
+        console.error(err);
+        if (out) out.textContent = "Erro ao gerar. Veja o console.";
+      }
+    });
+
+    // --- HELP BALLOON ---
+    const helpFab    = document.getElementById("helpFab");
+    const helpBubble = document.getElementById("helpBubble");
+    const helpClose  = document.getElementById("helpClose");
+
+    if (helpFab && helpBubble && helpClose) {
+      const setBubble = (show) => {
+        helpBubble.style.display = show ? "block" : "none";
+        helpFab.setAttribute("aria-expanded", String(show));
+      };
+
+      helpFab.addEventListener("click", () => {
+        const open = helpBubble.style.display !== "block";
+        setBubble(open);
+      });
+
+      helpClose.addEventListener("click", () => setBubble(false));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setBubble(false);
+      });
+    }
+  });
+</script>
+
+  <button class="help-fab" id="helpFab" aria-controls="helpBubble" aria-expanded="false" title="Instruções">?</button>
+
+  <div class="help-bubble" id="helpBubble" role="dialog" aria-labelledby="helpTitle" aria-modal="false">
+    <button class="close" id="helpClose" aria-label="Fechar">×</button>
+    <h4 id="helpTitle">Instruções rápidas</h4>
+    <p>• Utilize <code>IP-Valido</code> e <code>IP-Unidade</code> como usado nos exemplos. <code>Sem "/"</code> </p>
+    <p>• <code>IP_UNIDADE</code> e <code>IP_VALIDO</code> ja é calculado os Devidaos para aplicação do Script    |    /30 e /31 respectivamente</p>
+    <p>• Escolha a <code>VRF</code> correta: <strong>MPLS</strong> ou <strong>INTERNET</strong>.</p>
+    <p>• O campo <strong>IDENTIFICACÂO</strong> se refere ao singular da Unidade. EX: <strong>CREDIVALE</strong></p>
+    <p>•Em caso de mal funcionamento ou sujestão acionar o <strong>ZIBRINIX </strong></p>
+
+  </div>
+
+</body>
+</html>

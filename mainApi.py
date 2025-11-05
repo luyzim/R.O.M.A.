@@ -1,5 +1,3 @@
-
-
 import ipaddress, sys, json, argparse
 from pathlib import Path
 import tempfile, os
@@ -29,7 +27,6 @@ def render_template(path: Path, data: dict) -> str:
     txt = path.read_text(encoding="utf-8")
     return txt.format_map(SafeDict(data))
 
-
 def verificar_ip_valido(dados: dict, campo_ip: str) -> bool:
     valor_ip = (dados.get(campo_ip) or "").strip()
     iface = ipaddress.ip_interface(valor_ip)
@@ -43,7 +40,7 @@ def normalizar_ip_valido(
     campo_mask_dotted_opcional: str | None = None,  # ex.: "255.255.255.0"
     manter_host: bool = True,
     default_mask_when_missing: str | None = None,   # ex.: "255.255.255.255" ou "32"
-):  
+):
     valor_ip = (dados.get(campo_ip) or "").strip()
     if not valor_ip:
         return
@@ -132,7 +129,6 @@ def derivar_ip_gary_plankton(campo_ip: str, prefixo_saida: str, dados: dict):
 
 
 
-
 def validar_ip_sem_barra(dados: dict, campo: str):
     """Verifica se o campo informado NÃO contém uma barra."""
     valor = (dados.get(campo) or "").strip()
@@ -170,8 +166,8 @@ def run_command(dados: dict, cmd: str) -> dict:
         return {
             "status": "ok",
             "preview": preview,                    # conteúdo gerado
-            "unidade": dados.get("NOME_PA",""),
-            "loja": dados.get("NUM_PA",""),
+            "unidade": dados.get("NOME_PA", ""),
+            "loja": dados.get("NUM_PA", ""),
             "filename": filename,
         }
     except (ValueError, SystemExit) as e:
@@ -228,5 +224,3 @@ if __name__ == "__main__":
     else:
         print(json.dumps({"status":"error","error":f"comando desconhecido: {args.cmd}"}))
         sys.exit(3)
-
-
