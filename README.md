@@ -58,3 +58,17 @@ Existem duas formas de usar o R.O.M.A.:
     ```
 
 2.  O script solicitará as informações necessárias no terminal para gerar a configuração.
+
+## Como Contribuir
+
+Contribuições são bem-vindas! Se você tiver sugestões, melhorias ou correções de bugs, siga os passos abaixo:
+
+1.  **Faça um Fork** do repositório.
+2.  **Crie uma Branch** para sua feature (`git checkout -b feature/nova-feature`).
+3.  **Faça o Commit** de suas mudanças (`git commit -m 'Adiciona nova feature'`).
+4.  **Faça o Push** para a sua branch (`git push origin feature/nova-feature`).
+5.  **Abra um Pull Request**.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
