@@ -12,15 +12,17 @@ O projeto utiliza uma combinação de Python para a lógica de geração de conf
 - Cálculo e derivação de endereços IP.
 - Interface web para preenchimento de dados.
 - Interface de linha de comando para uso interativo.
+- API RESTful para integração com outros sistemas.
 
 ## Estrutura do Projeto
 
 - `main.py`: Script principal para uso via linha de comando (interativo).
 - `mainApi.py`: Script Python que recebe dados em JSON e gera a configuração. É chamado pelo servidor Node.js.
-- `server.js`: Servidor web em Node.js/Express que serve a interface web e a API.
+- `server.js`: Servidor web em Node.js/Express monolítico.
+- `server2.js`: Servidor web em Node.js/Express modularizado, utilizando rotas.
 - `data/`: Contém os templates de configuração (`.txt`).
 - `public/`: Contém os arquivos da interface web (HTML, JS).
-- `routes/`: Contém as rotas da API do Express.
+- `routes/`: Contém as rotas da API do Express, utilizadas pelo `server2.js`.
 
 ## Instalação
 
@@ -41,7 +43,11 @@ Existem duas formas de usar o R.O.M.A.:
 
 ### 1. Interface Web
 
-1.  **Inicie o servidor:**
+1.  **Inicie o servidor (modularizado):**
+    ```bash
+    node server2.js
+    ```
+    Alternativamente, você pode iniciar o servidor monolítico:
     ```bash
     node server.js
     ```
@@ -58,6 +64,15 @@ Existem duas formas de usar o R.O.M.A.:
     ```
 
 2.  O script solicitará as informações necessárias no terminal para gerar a configuração.
+
+## API Endpoints
+
+A API é servida pelo `server2.js` e possui os seguintes endpoints:
+
+- `GET /api/templates`: Retorna a lista de templates de configuração disponíveis.
+- `POST /run/mkt`: Gera a configuração para um roteador Mikrotik. O corpo da requisição deve conter os dados em JSON.
+- `POST /run/cisco`: Gera a configuração para um roteador Cisco. O corpo da requisição deve conter os dados em JSON.
+- `GET /status`: Retorna o status do servidor.
 
 ## Como Contribuir
 
